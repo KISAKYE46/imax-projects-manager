@@ -3,48 +3,44 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
+import 'package:workers/values/colors.dart';
 import '../session/Session.dart';
+import '../values/Theme.dart';
 import '../values/strings.dart';
 import '../widgets/widgets.dart';
 
-class History extends StatefulWidget {
+class Location extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return HistoryState();
+    return LocationState();
   }
 }
 
-class HistoryState extends State<History> {
-  var history = [];
+class LocationState extends State<Location> {
+  var location = [];
+
   Widget currentDisplay = loadingWidget();
 
   var itemCount = 0;
-  var hasItems = false;
+  var loading = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: NestedScrollView(
         body: RefreshIndicator(
             child: Container(
-              width: double.maxFinite,
-              child: Stack(
-                children: [
-                  Container(
-                    child: currentDisplay,
-                    alignment: Alignment.center,
-                  )
-                ],
-              ),
-            ),
+                alignment: Alignment.center,
+                padding: SystemTheme.fabRLMargin,
+                child: currentDisplay),
             onRefresh: () async {
-              loadHistory(context);
+              loadLocation(context);
             }),
         headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
           return [
             SliverAppBar(
               floating: true,
               snap: true,
-              title: Text("Projects' History"),
+              title: Text("Places History"),
               // actions: [navActions(context, Icons.share, null)],
             )
           ];
@@ -56,55 +52,57 @@ class HistoryState extends State<History> {
   @override
   void initState() {
     super.initState();
-    history = [];
-    itemCount = history.length;
+    location = [];
+    itemCount = location.length;
     currentDisplay = loadingWidget();
-    loadHistory(context);
+
+    loadLocation(context);
   }
 
-  void loadHistory(BuildContext context) async {
+  void loadLocation(BuildContext context) async {
+    setState(() {
+      currentDisplay = loadingWidget();
+    });
     try {
-      var data = {"employee_id": Session.userId, "history": ""};
+      var data = {"history": "", "employee_id": Session.userId, "Location": ""};
 
       Uri uri = Uri.http(systemHost, systemUrl, data);
 
       Response response = await http.get(uri);
 
+      print(response.body);
+
       if (!response.body.isEmpty) {
         setState(() {
-          history = jsonDecode(response.body);
-          itemCount = history.length;
+          location = jsonDecode(response.body);
+          itemCount = location.length;
 
           if (itemCount > 0) {
             setState(() {
-              currentDisplay = ListView.builder(
+              currentDisplay = GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3, childAspectRatio: 0.8),
                 itemCount: itemCount,
                 itemBuilder: (BuildContext context, int index) {
-                  return historyCard(context, history[index]["task_name"],
-                      startDate: history[index]["login_time"],
-                      endDate: history[index]["logout_time"],
-                      task: history[index]);
+                  return locationCard(context, location[index]["location_name"],
+                      startDate: location[index]["login_time"],
+                      endDate: location[index]["logout_time"],
+                      task: location[index]);
                 },
               );
             });
-            hasItems = true;
           } else {
-            hasItems = false;
             currentDisplay = noDataWidget();
+            showPersistentSnackbar(context, "No places found.",
+                color: ThemeColors.colorWarning);
           }
         });
 
-        // print(history);
+        print(location);
       }
     } catch (exception) {
-      print(exception);
-
-      setState(() {
-        currentDisplay = noDataWidget();
-      });
-      showActionSnackbar(context, "Something went wrong", "Retry", () {
-        loadHistory(context);
-      });
+      Navigator.pop(context);
+      showActionSnackbar(context, "Something went wrong", "", () {});
     }
   }
 

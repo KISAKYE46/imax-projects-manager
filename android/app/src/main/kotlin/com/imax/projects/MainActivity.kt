@@ -1,4 +1,4 @@
-package com.platforms.workers
+package com.imax.projects
 
 import io.flutter.embedding.android.FlutterActivity
 

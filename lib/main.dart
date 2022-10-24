@@ -4,11 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:workers/pages/IndexPage.dart';
-import 'package:workers/pages/Preferences.dart';
 import 'package:workers/router/page_router.dart';
-import 'package:workers/session/Session.dart';
 import 'package:workers/values/colors.dart';
-import 'pages/HomePage.dart';
+import 'pages/LogginPage.dart';
 import 'pages/intro.dart';
 
 void main() {
@@ -27,7 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Supervisor',
+      title: 'Seagate-UG',
       theme: ThemeData(
           primaryColorLight: ThemeColors.colorPrimary,
           primaryColorDark: ThemeColors.systemColorOnLight,
@@ -49,9 +47,11 @@ class MyApp extends StatelessWidget {
                   borderSide: BorderSide(
                       color: ThemeColors.systemColorLight, width: 4.0)))),
 
-      //home: MyHomePage(title: ""),
+      home: MyHomePage(title: ""),
       //home: DetailsPage(),
-      home: HomePage(),
+      //home: HomePage(),
+
+      //home: LogginPage(),
 
       //home: Notifications(),
 
@@ -85,12 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void changePage(BuildContext context) async {
-    checkServer();
-
-    // MaterialPageRoute pageRoute = MaterialPageRoute(builder: (context) {
-    //   return IndexPage();
-    // });
-    // Navigator.of(context).pushReplacement(pageRoute);
+    //checkServer();
+    MaterialPageRoute pageRoute = MaterialPageRoute(builder: (context) {
+      return LogginPage();
+    });
+    Navigator.of(context).pushReplacement(pageRoute);
   }
 
   Future<Response> checkConnection(Uri url) async {

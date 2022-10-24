@@ -1,12 +1,29 @@
 import 'dart:io';
 
 class Session {
+  static String userId = "1";
   static String name = "Kisakye Joel Nkanji";
   static String email = "nkanjijoel@gmail.com";
-  static String contact = "0709518661";
+  static String contact = "0708847386";
   static String lastLogin = "9th/06/2022";
   static String lastAction = "Signed In at 8:00pm";
+  static String today = "";
+  static String deptName = "";
+  static String desName = "";
   static bool signedIn = false;
+  static bool completed = false;
+
+  static Map<String, String> dept = {
+    "id": "",
+    "name": "Select your department.."
+  };
+
+  static Map<String, String> des = {
+    "id": "",
+    "name": "Select your designation.."
+  };
+
+  static Map<String, String> gender = {"gender": "", "name": "Male"};
 
   static updateSession() {
     try {

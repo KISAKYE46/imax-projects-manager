@@ -21,13 +21,18 @@ class IntroPageState extends State<IntroPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Spacer(),
-            Icon(
-              Icons.newspaper,
-              color: ThemeColors.colorPrimary,
-              size: 40,
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 120, maxHeight: 120),
+              child: Image.asset(
+                "assets/images/logo.png",
+                height: 130,
+                width: 130,
+                fit: BoxFit.cover,
+                scale: 2.0,
+              ),
             ),
             Text(
-              "N.E.W.S",
+              "i-MAX INNOVATION ",
               style: TextStyle(
                   fontFamily: "Inherit",
                   fontSize: 17,

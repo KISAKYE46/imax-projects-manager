@@ -3,13 +3,17 @@ const dummyString =
 
 //const systemHost = "10.0.2.2";
 
-//
+//192.168.43.62
 //const systemHost = "192.168.43.62";
 //const systemHost = "kjn.atwebpages.com";
-const systemHost = "largish-shelves.000webhostapp.com";
-const path = "news_api/news_api";
-//const path = "news_api";
-const systemUrl = "$path/api.php";
+//const systemHost = "largish-shelves.000webhostapp.com";
+
+const systemHost = "imaxinnovationhub.com";
+const path = "uploads/projects/projects-app";
+
+//const systemHost = "seagate-electric.co.ug";
+//const path = "seagate-app";
+const systemUrl = "$path/app_requests.php";
 const systemServer = path;
 const serverUrl = "http://$systemHost/$systemServer";
 const systemImageUrl = "http://$systemHost/$systemServer/images/";

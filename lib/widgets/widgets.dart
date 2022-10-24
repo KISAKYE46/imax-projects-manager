@@ -12,6 +12,8 @@ import 'package:workers/values/colors.dart';
 import 'package:workers/values/dimen.dart';
 import 'package:workers/values/strings.dart';
 
+import '../pages/TaskDetails.dart';
+
 Widget headline(
     BuildContext context,
     String title,
@@ -178,11 +180,9 @@ Widget textField(BuildContext context, String label,
     {double? size}) {
   TextEditingController innerController = TextEditingController();
   return Container(
-    height: size != null ? size : 60,
+    height: 60,
     padding: SystemTheme.fabMargin,
     child: TextField(
-      maxLines: 20,
-      minLines: 12,
       controller: controller != null ? controller : innerController,
       decoration: InputDecoration(
           hintMaxLines: 20,
@@ -193,8 +193,34 @@ Widget textField(BuildContext context, String label,
           ),
           prefixIcon: Icon(icon == null ? Icons.person : icon),
           border: OutlineInputBorder(
-              borderSide: BorderSide(width: .2),
-              borderRadius: BorderRadius.circular(2))),
+              borderSide: BorderSide(width: 0),
+              borderRadius: BorderRadius.circular(systemRadius))),
+    ),
+  );
+}
+
+Widget phoneField(BuildContext context, String label,
+    TextEditingController? controller, IconData? icon,
+    {double? size}) {
+  TextEditingController innerController = TextEditingController();
+  return Container(
+    height: 60,
+    padding: SystemTheme.fabMargin,
+    child: TextField(
+      controller: controller != null ? controller : innerController,
+      decoration: InputDecoration(
+          hintMaxLines: 20,
+          helperMaxLines: 20,
+          label: Text(
+            label,
+            style: TextStyle(fontSize: 12),
+          ),
+          prefixIcon: Icon(icon == null ? Icons.person : icon),
+          focusColor: ThemeColors.systemColorOnLight,
+          border: OutlineInputBorder(
+              borderSide: BorderSide(width: 0),
+              borderRadius: BorderRadius.circular(systemRadius))),
+      keyboardType: TextInputType.phone,
     ),
   );
 }
@@ -220,7 +246,7 @@ Widget largeTextField(BuildContext context, String label,
           //prefixIcon: Icon(icon == null ? Icons.person : icon),
           border: OutlineInputBorder(
               borderSide: BorderSide(width: .2),
-              borderRadius: BorderRadius.circular(2))),
+              borderRadius: BorderRadius.circular(systemRadius))),
     ),
   );
 }
@@ -245,7 +271,7 @@ Widget passwordTextField(BuildContext context, String label,
           prefixIcon: Icon(icon == null ? Icons.person : icon),
           border: OutlineInputBorder(
               borderSide: BorderSide(width: .2),
-              borderRadius: BorderRadius.circular(2))),
+              borderRadius: BorderRadius.circular(systemRadius))),
     ),
   );
 }
@@ -258,6 +284,30 @@ Widget navActions(BuildContext context, IconData icon, Widget? page) {
         }
       },
       icon: Icon(icon));
+}
+
+Widget navMessage(BuildContext context, IconData icon, Function? function) {
+  return IconButton(
+      onPressed: () {
+        if (function != null) {
+          function();
+        }
+      },
+      icon: Icon(icon));
+}
+
+Widget formTitle(BuildContext context, String title) {
+  return Container(
+    child: Text(
+      "$title",
+      textAlign: TextAlign.center,
+      style: TextStyle(
+          color: ThemeColors.systemColorOnLight,
+          fontSize: 19,
+          fontWeight: FontWeight.w400),
+    ),
+    margin: SystemTheme.fabRLBMargin,
+  );
 }
 
 Widget navBadge(BuildContext context, IconData icon, String value) {
@@ -626,6 +676,14 @@ void showTextSnackbar(BuildContext context, String message) {
   ScaffoldMessenger.of(context).showSnackBar(snackbar);
 }
 
+void showLongSnackbar(BuildContext context, String message) {
+  var snackbar = SnackBar(
+      duration: Duration(seconds: 12),
+      backgroundColor: ThemeColors.colorPrimary,
+      content: Text(message));
+  ScaffoldMessenger.of(context).showSnackBar(snackbar);
+}
+
 void showActionSnackbar(
     BuildContext context, String message, String actionText, Function action) {
   var snackbar = SnackBar(
@@ -640,16 +698,10 @@ void showActionSnackbar(
   ScaffoldMessenger.of(context).showSnackBar(snackbar);
 }
 
-void showPersistentActionSnackbar(
-    BuildContext context, String message, String actionText, Function action) {
+void showPersistentSnackbar(BuildContext context, String message,
+    {Color? color}) {
   var snackbar = SnackBar(
-    backgroundColor: ThemeColors.colorPrimary,
-    action: SnackBarAction(
-        textColor: ThemeColors.systemColorLight,
-        label: actionText,
-        onPressed: () {
-          action();
-        }),
+    backgroundColor: color == null ? ThemeColors.colorPrimary : color,
     content: Text(message),
     duration: Duration(seconds: 15),
   );
@@ -671,11 +723,18 @@ Widget errorWidget(String message, IconData? icon) {
   );
 }
 
-Widget loadingWidget() {
-  return Column(
-    mainAxisAlignment: MainAxisAlignment.center,
-    crossAxisAlignment: CrossAxisAlignment.center,
-    children: [CircularProgressIndicator()],
+Widget loadingWidget({Color color = ThemeColors.colorPrimary}) {
+  return Container(
+    padding: SystemTheme.fabMargin,
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        CircularProgressIndicator(
+          color: color,
+        ),
+      ],
+    ),
   );
 }
 
@@ -684,16 +743,23 @@ Widget noWidget() {
 }
 
 Widget dashBoardCard(BuildContext context, String text, IconData icon,
-    {Widget? page}) {
+    {Widget? page, Color? color, Function? action}) {
   return Card(
-    elevation: 4,
+    elevation: 3,
+    shadowColor: ThemeColors.colorPrimary,
     child: GestureDetector(
       onTap: () {
         if (page != null) {
           routeTo(context, page);
         }
+
+        if (action != null) {
+          action();
+        }
       },
       child: Container(
+        color: color,
+        padding: SystemTheme.fabMargin,
         alignment: Alignment.center,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -705,6 +771,7 @@ Widget dashBoardCard(BuildContext context, String text, IconData icon,
             ),
             Text(
               "\n" + text,
+              textAlign: TextAlign.center,
               style: TextStyle(fontWeight: FontWeight.bold),
             )
           ],
@@ -714,22 +781,122 @@ Widget dashBoardCard(BuildContext context, String text, IconData icon,
   );
 }
 
-Widget historyCard(BuildContext context, String heading) {
+Widget historyCard(BuildContext context, String heading,
+    {String startDate = "", String? endDate, Map? task}) {
   return Container(
     margin: SystemTheme.fabBottomMargin,
     child: ListTile(
       tileColor: ThemeColors.systemColorLight,
       iconColor: ThemeColors.colorPrimary,
-      leading: Icon(Icons.work_history),
+      leading: Icon(endDate == null ? Icons.work_history : Icons.check,
+          color: endDate == null
+              ? ThemeColors.colorDanger
+              : ThemeColors.colorSuccess),
       title: Text(heading),
       subtitle: Text(
-        "From 8:00am to 7:00pm",
-        style: TextStyle(color: ThemeColors.colorPrimary),
+        "From $startDate  till ${endDate == null ? 'unspecified time' : endDate.toString().split(' ')[0]}",
+        style: TextStyle(
+            color: endDate == null
+                ? ThemeColors.colorDanger
+                : ThemeColors.colorSuccess),
       ),
       onTap: () {
-        showActionSnackbar(
-            context, "You are about to do something", "Continue", () {});
+        if (task != null) {
+          routeTo(context, TaskDetails(task));
+        }
       },
+    ),
+  );
+}
+
+Widget taskHeadingCard(BuildContext context, String heading,
+    {String startDate = "",
+    String? endDate,
+    String? location = "",
+    String? body = ""}) {
+  return Container(
+    child: ListTile(
+      tileColor: ThemeColors.systemColorLight,
+      iconColor: ThemeColors.colorPrimary,
+      leading: Icon(endDate == null ? Icons.work_history : Icons.check,
+          color: endDate == null
+              ? ThemeColors.colorDanger
+              : ThemeColors.colorSuccess),
+      title: Text(heading),
+      subtitle: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "From $startDate  till ${endDate == null ? 'unspecified time' : endDate.toString().split(' ')[0]}",
+            style: TextStyle(
+                color: endDate == null
+                    ? ThemeColors.colorDanger
+                    : ThemeColors.colorSuccess),
+          ),
+          Container(
+            padding: SystemTheme.fabTBMargin,
+            child: Row(
+              children: [Icon(Icons.location_on), Text(" ${location}")],
+            ),
+          ),
+          Container(
+            padding: SystemTheme.fabTBMargin,
+            child: Text("$body"),
+          )
+        ],
+      ),
+      onTap: () {
+        //routeTo(context, TaskDetails());
+      },
+    ),
+  );
+}
+
+Widget descriptionBody(BuildContext context, String desc) {
+  return ConstrainedBox(
+    constraints: BoxConstraints(minHeight: 80),
+    child: Container(
+        child: Card(
+      child: Container(
+        margin: SystemTheme.fabTBMargin,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [Text(desc)],
+        ),
+        padding: SystemTheme.fabMargin,
+      ),
+    )),
+  );
+}
+
+Widget locationCard(BuildContext context, String heading,
+    {String startDate = "", String? endDate, Map? task}) {
+  return Card(
+    child: GestureDetector(
+      onTap: () {
+        if (task != null) {
+          routeTo(context, TaskDetails(task));
+        }
+      },
+      child: Container(
+          padding: SystemTheme.fabMargin,
+          alignment: Alignment.center,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.location_on,
+                color: ThemeColors.colorDanger,
+              ),
+              Text(
+                "\n$heading",
+                textAlign: TextAlign.center,
+              )
+            ],
+          )),
     ),
   );
 }
@@ -740,6 +907,67 @@ Widget labelText(BuildContext context, String label) {
     child: Text(
       "$label",
       style: TextStyle(fontWeight: FontWeight.bold),
+    ),
+  );
+}
+
+Widget statusMessage(BuildContext context, String message) {
+  return Container(
+      alignment: Alignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ListTile(
+            subtitle: Text("Nothing here!!"),
+          )
+        ],
+      ));
+}
+
+void loadingDialog(BuildContext context) {
+  showDialog(
+      barrierColor: ThemeColors.systemColorLight,
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: SystemTheme.fabTopMargin,
+          margin: SystemTheme.fabTopMargin,
+          height: double.maxFinite,
+          alignment: Alignment.bottomCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              loadingWidget(),
+              Text(
+                "Please Wait..",
+                style: Theme.of(context).textTheme.bodyMedium,
+              )
+            ],
+          ),
+        );
+      });
+}
+
+Widget noDataWidget({String text = "No Records Found"}) {
+  return Container(
+    alignment: Alignment.center,
+    child: Text(
+      text,
+      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+    ),
+  );
+}
+
+Widget companyLogo(BuildContext context) {
+  return Container(
+    alignment: Alignment.center,
+    padding: SystemTheme.fabBottomMargin,
+    child: ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 200, maxHeight: 200),
+      child: Image.asset("assets/images/logo.png"),
     ),
   );
 }

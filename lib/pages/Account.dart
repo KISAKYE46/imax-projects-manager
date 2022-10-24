@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:workers/pages/LogginPage.dart';
+import 'package:workers/router/page_router.dart';
 
 import '../values/Theme.dart';
 import '../values/colors.dart';
+import '../values/dimen.dart';
 import '../widgets/widgets.dart';
 import '../session/Session.dart';
 import 'AddPage.dart';
@@ -15,20 +18,29 @@ class Account extends StatefulWidget {
 }
 
 class AccountState extends State<Account> {
+  bool punchedIn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    punchedIn = Session.signedIn;
+  }
+
   @override
   Widget build(BuildContext context) {
     return NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
-              elevation: 0,
+              elevation: appBarElevation,
               // backgroundColor: ThemeColors.systemColorLight,
               title: Text(
-                "My Profile",
+                "My Account",
                 //  style: TextStyle(color: ThemeColors.colorPrimary),
               ),
               actions: [
-                navActions(context, Icons.check, null),
+                navActions(context,
+                    punchedIn == true ? Icons.check : Icons.info_outline, null),
                 // navBadge(context, Icons.notifications, "9"),
               ],
               floating: true,
@@ -71,15 +83,6 @@ class AccountState extends State<Account> {
               Container(
                 height: 5,
               ),
-              ListTile(
-                leading: Icon(
-                  Icons.email,
-                  color: ThemeColors.colorPrimary,
-                ),
-                tileColor: ThemeColors.systemColorLight,
-                title: Text("Email"),
-                subtitle: Text(Session.email),
-              ),
               Container(
                 padding: SystemTheme.fabMargin,
                 child: Text(
@@ -92,42 +95,24 @@ class AccountState extends State<Account> {
                   Icons.work_history,
                   color: ThemeColors.colorPrimary,
                 ),
+                tileColor: Color.fromRGBO(255, 255, 255, 1),
+                title: Text("Department"),
+                subtitle: Text(Session.deptName),
+              ),
+              Container(
+                height: 5,
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.work_history,
+                  color: ThemeColors.colorPrimary,
+                ),
                 tileColor: ThemeColors.systemColorLight,
                 title: Text("Job Position"),
-                subtitle: Text("Distributor"),
+                subtitle: Text(Session.desName),
               ),
               Container(
                 height: 5,
-              ),
-              ListTile(
-                leading: Icon(
-                  Icons.task,
-                  color: ThemeColors.colorPrimary,
-                ),
-                tileColor: ThemeColors.systemColorLight,
-                title: Text("Tasks"),
-                subtitle: Text("78"),
-              ),
-              Container(
-                height: 5,
-              ),
-              ListTile(
-                leading: Icon(Icons.handshake, color: ThemeColors.colorPrimary),
-                tileColor: ThemeColors.systemColorLight,
-                title: Text("Punch ins"),
-                subtitle: Text("67"),
-              ),
-              Container(
-                height: 5,
-              ),
-              ListTile(
-                leading: Icon(
-                  Icons.location_history,
-                  color: ThemeColors.colorPrimary,
-                ),
-                tileColor: ThemeColors.systemColorLight,
-                title: Text("Locations"),
-                subtitle: Text("67"),
               ),
               Container(
                 padding: SystemTheme.fabMargin,
@@ -151,6 +136,14 @@ class AccountState extends State<Account> {
                     )
                   ],
                 ),
+              ),
+              Container(
+                margin: SystemTheme.fabRLTMargin,
+                child: ElevatedButton(
+                    onPressed: () {
+                      routePermanentlyTo(context, LogginPage());
+                    },
+                    child: Text("Sign out")),
               )
             ],
           ),
